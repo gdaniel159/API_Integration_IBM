@@ -1,14 +1,14 @@
 ## Deployment
 
-Para desplegar el proyecto es necesario realizar lo siguiente
+To deploy the project, follow these steps:
 
-### 1. Servidor local
+### 1. Local Server
 
 ```bash
   python app.py
 ```
 
-### 2. Exponer servidor local
+### 2. Expose Local Server
 
 ```bash
   ngrok http 5000
@@ -16,7 +16,7 @@ Para desplegar el proyecto es necesario realizar lo siguiente
 
 ### 3. Setup de la url
 
-Una vez este desplegado el servidor lo que debemos hacer es utilizar el endpoint de la API url/bot para acceder a las caracteristicas del chat bot, en mi caso utilize NGROK para exponer la ruta local de mi proyecto y asi utilizar el endpoint proporcionado asignandolo en un servicio, en este caso se uso Twilio
+Once the server is deployed, you need to use the API endpoint at url/bot to access the chatbot features. In my case, I used NGROK to expose my local project route and then used the provided endpoint, assigning it to a service, such as Twilio.
 
 ![Logo](img_twilo_reference.png)
 

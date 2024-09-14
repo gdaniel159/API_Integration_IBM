@@ -8,6 +8,8 @@ app.secret_key = 'pKUoKNQm88'
 API_KEY = "YOUR_IBM_API_KEY"
 
 # Obtén el token de autenticación del modelo de IBM
+# Get the authentication token from the IBM model.
+
 def get_ibm_token():
     response = requests.post(
         'https://iam.cloud.ibm.com/identity/token',
@@ -36,6 +38,8 @@ def get_prediction(values):
 
     # El endpoint modificarlo por el ya existente en tu entorno con tu propio modelo ya entrenado en IBM MACHINE LEARNING
 
+    # Modify the endpoint to use the one already existing in your environment with your own pre-trained model in IBM MACHINE LEARNING.
+
     response = requests.post(
         'https://us-south.ml.cloud.ibm.com/ml/v4/deployments/0a873bc8-28e6-40e1-8224-2c2a34b47ac0/predictions?version=2021-05-01', 
         json=payload_scoring,
@@ -44,8 +48,11 @@ def get_prediction(values):
     return response.json()
 
 # Validaciones por tipo de dato esperado
+# Validations by Expected Data Type
+
 def validate_input(answer, question_index):
     # Tipos de datos esperados por pregunta
+    # Expected Data Types by Question
     expected_types = [
         int,    # Edad
         int,    # Sexo (0 o 1)
@@ -71,20 +78,24 @@ def validate_input(answer, question_index):
                 return float(answer)
         return answer
     except ValueError:
-        return None  # Retornar None si no es el tipo esperado
+        return None
 
 def handle_prediction():
     # Extrae respuestas enviadas al modelo de predicción
+    # Extract responses sent to the prediction model.
     print("Answers being sent to prediction model:", session['answers'])
 
     # Obtiene el resultado de la predicción
+    # Obtain the prediction result.
     prediction_result = get_prediction(session['answers'])
     print("Full prediction result:", prediction_result)
 
     # Inicializa la variable de mensajes
+    # Initialize the message variable
     messages = []
 
     # Verifica la estructura del resultado de la predicción
+    # Verify the structure of the prediction result.
     if 'predictions' in prediction_result and len(prediction_result['predictions']) > 0:
         values = prediction_result['predictions'][0]['values']
         print("Values extracted from prediction result:", values)
@@ -94,6 +105,7 @@ def handle_prediction():
             print("Probabilities extracted:", probabilities)
 
             # Verifica si hay al menos dos probabilidades y determina el riesgo
+            # Check if there are at least two probabilities and determine the risk.
             if len(probabilities) > 1:
                 probability = probabilities[1]
                 if probability > 0.5:
@@ -111,9 +123,13 @@ def handle_prediction():
     # messages.append("¿Te gustaría reiniciar la evaluación? Responde 'sí' para comenzar de nuevo o 'no' para terminar.")
 
     # Devuelve la lista de mensajes como un solo string
+    # Return the list of messages as a single string.
+    
     return "\n".join(messages)
 
 # Ruta para recibir mensajes de WhatsApp
+# Route to receive WhatsApp messages
+
 @app.route('/bot', methods=['POST'])
 def bot():
     incoming_msg = request.values.get('Body', '').strip().lower()
@@ -121,10 +137,13 @@ def bot():
     message = response.message()
 
     # Maneja la selección de opciones inicial
+    # Handle the initial option selection.
     if 'step' not in session:
         return init_options()  # This will now correctly return the initial options
 
     # Opciones iniciales
+    # Initial options
+
     if session['step'] == 'options':
         if incoming_msg == '1':
             message.body("Nuestro horario de atención es de lunes a viernes, de 9:00 AM a 6:00 PM.")
@@ -136,6 +155,7 @@ def bot():
         return str(response)
 
     # Cuestionario de evaluación
+    # Evaluation questionnaire
     if 'questions' in session:
         if 'current_question' in session and session['current_question'] < len(session['questions']):
             current_question_index = session['current_question']
@@ -150,7 +170,8 @@ def bot():
                 else:
                     response_handle = handle_prediction()
                     message.body(response_handle)
-                    session.clear()  # Reinicia la sesión después de completar las preguntas
+                    session.clear()  # Reinicia la sesión después de completar las preguntas # Restart the session after completing the questions.
+
             else:
                 message.body(f"Por favor, proporciona un valor válido para la pregunta: {session['questions'][current_question_index]}")
         return str(response)
